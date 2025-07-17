@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FokusKuy - Pomodoro Timer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🐨 FokusKuy 🐨</h1>
+        <div class="timer-card">
+            
+            <div class="duration-selector">
+                <label for="duration-select">Durasi Fokus:</label>
+                <select id="duration-select">
+                    <option value="15">15 Menit</option>
+                    <option value="20" selected>20 Menit</option>
+                    <option value="25">25 Menit</option>
+                    <option value="30">30 Menit</option>
+                </select>
+            </div>
+            
+            <div id="timer-display">20:00</div>
+            <p id="status-text">Waktunya untuk fokus!</p>
+        </div>
+        <div class="controls">
+            <button id="start-pause-btn">Mulai</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+
+        <div class="stats-container">
+            <h2>Statistik Produktivitasmu</h2>
+            
+            <div class="chart-controls">
+                <button id="btn-weekly" class="active">7 Hari</button>
+                <button id="btn-monthly">Bulan Ini</button>
+                <button id="btn-yearly">Tahun Ini</button>
+            </div>
+            
+            <canvas id="stats-chart"></canvas>
+        </div>
+    </div>
+
+    <audio id="notification-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
