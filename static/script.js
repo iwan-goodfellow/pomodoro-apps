@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Ambil elemen dropdown baru
     const durationSelect = document.getElementById('duration-select');
 
-    // Waktu fokus tidak lagi konstan, tapi diambil dari dropdown
     let focusTime = parseInt(durationSelect.value) * 60;
     let timeLeft = focusTime;
     let timerInterval = null;
     let isPaused = true;
     let chartInstance = null;
 
-    // Ambil elemen lain dari HTML
+    // BARU: Variabel untuk menyimpan waktu selesai
+    let endTime = 0;
+
     const timerDisplay = document.getElementById('timer-display');
     const startPauseBtn = document.getElementById('start-pause-btn');
     const resetBtn = document.getElementById('reset-btn');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     
-    function showNotification() { if (Notification.permission === 'granted') { new Notification('Waktunya Istirahat!', { body: 'Kerja bagus! Ayo break dulu ☕️✨', icon: 'https://icons8.com/icon/woMC0BA8mqBt/alarm-clock' }); notificationSound.play(); } }
+    function showNotification() { if (Notification.permission === 'granted') { new Notification('Waktunya Istirahat!', { body: 'Kerja bagus! Ayo break dulu ☕️✨', icon: 'https://img.icons8.com/emoji/48/tomato-emoji.png' }); notificationSound.play(); } }
 
     async function saveSession() {
         try {
@@ -43,16 +43,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function toggleTimer() {
-        // Saat timer jalan, nonaktifkan dropdown
         durationSelect.disabled = true;
 
         if (isPaused) {
             isPaused = false;
+            // UPDATE: Catat waktu selesai berdasarkan sisa waktu yang ada
+            endTime = Date.now() + timeLeft * 1000;
+            
             startPauseBtn.textContent = 'Jeda';
             statusText.textContent = 'Lagi fokus... jangan ganggu!';
+            
             timerInterval = setInterval(() => {
-                timeLeft--;
+                // UPDATE: Hitung sisa waktu berdasarkan selisih waktu, bukan dikurangi 1
+                const newTimeLeft = Math.round((endTime - Date.now()) / 1000);
+                timeLeft = newTimeLeft > 0 ? newTimeLeft : 0;
+                
                 updateTimerDisplay();
+
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     showNotification();
@@ -65,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
             startPauseBtn.textContent = 'Lanjut';
             statusText.textContent = 'Lagi dijeda nih.';
             clearInterval(timerInterval);
-            // Saat di-pause, aktifkan lagi dropdown
             durationSelect.disabled = false;
         }
     }
@@ -73,19 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetTimer() {
         clearInterval(timerInterval);
         isPaused = true;
-        // Ambil waktu dari dropdown saat reset
         focusTime = parseInt(durationSelect.value) * 60;
         timeLeft = focusTime;
+        endTime = 0; // Reset waktu selesai
         updateTimerDisplay();
         startPauseBtn.textContent = 'Mulai';
         statusText.textContent = 'Waktunya untuk fokus!';
-        // Aktifkan lagi dropdown saat di-reset
         durationSelect.disabled = false;
     }
 
-    // BARU: Event listener saat pilihan dropdown berubah
     durationSelect.addEventListener('change', () => {
-        // Langsung reset timer dengan durasi baru
         resetTimer();
     });
     
@@ -136,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnMonthly.addEventListener('click', () => { handleActiveButton(btnMonthly); updateChart('monthly'); });
     btnYearly.addEventListener('click', () => { handleActiveButton(btnYearly); updateChart('yearly'); });
 
-    // Inisialisasi tampilan awal
     updateTimerDisplay();
     updateChart('weekly');
 });
