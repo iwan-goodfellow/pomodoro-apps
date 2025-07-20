@@ -1,16 +1,31 @@
+/* Mendefinisikan variabel warna untuk Light Mode */
 :root {
     --bg-color: #f0f4f8;
     --card-color: #ffffff;
-    --primary-color: #ff6347; /* Tomato color */
-    --secondary-color: #4CAF50;
-    --text-color: #333;
+    --text-color: #333333;
+    --text-secondary-color: #888888;
+    --primary-color: #ff6347; /* Tomato */
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --button-inactive-bg: #ddd;
+    --button-inactive-text: #555;
+}
+
+/* Mendefinisikan variabel warna untuk Dark Mode */
+body.dark-mode {
+    --bg-color: #121212;
+    --card-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-secondary-color: #bbbbbb;
+    --primary-color: #ff7a5c; /* Tomato sedikit lebih cerah */
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    --button-inactive-bg: #333333;
+    --button-inactive-text: #bbbbbb;
 }
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: var(--bg-color); /* Menggunakan variabel */
+    color: var(--text-color); /* Menggunakan variabel */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,6 +33,26 @@ body {
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s; /* Transisi halus */
+}
+
+/* BARU: Tombol Dark Mode */
+#theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--card-color);
+    border: none;
+    font-size: 1.5rem;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+    line-height: 1;
+}
+#theme-toggle:hover {
+    transform: scale(1.1);
 }
 
 .container {
@@ -32,12 +67,13 @@ h1 {
     margin-bottom: 20px;
 }
 
-.timer-card {
-    background: var(--card-color);
+.timer-card, .stats-container {
+    background: var(--card-color); /* Menggunakan variabel */
     padding: 40px 20px;
     border-radius: 20px;
     box-shadow: var(--shadow);
     margin-bottom: 30px;
+    transition: background-color 0.3s;
 }
 
 #timer-display {
@@ -48,7 +84,7 @@ h1 {
 
 #status-text {
     font-size: 1.1rem;
-    color: #888;
+    color: var(--text-secondary-color); /* Menggunakan variabel */
     margin-top: 10px;
 }
 
@@ -75,19 +111,16 @@ h1 {
 }
 
 #reset-btn {
-    background-color: #ddd;
-    color: #555;
+    background-color: var(--button-inactive-bg); /* Menggunakan variabel */
+    color: var(--button-inactive-text); /* Menggunakan variabel */
 }
 
 #reset-btn:hover {
-    background-color: #ccc;
+    filter: brightness(0.9);
 }
 
 .stats-container {
-    background-color: var(--card-color);
     padding: 20px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
     margin-top: 50px;
 }
 
@@ -104,8 +137,8 @@ h1 {
 
 .chart-controls button {
     font-family: 'Poppins', sans-serif;
-    background-color: #e0e0e0;
-    color: #555;
+    background-color: var(--button-inactive-bg); /* Menggunakan variabel */
+    color: var(--button-inactive-text); /* Menggunakan variabel */
     border: none;
     padding: 8px 16px;
     border-radius: 20px;
@@ -115,7 +148,7 @@ h1 {
 }
 
 .chart-controls button:hover {
-    background-color: #d0d0d0;
+    filter: brightness(0.9);
 }
 
 .chart-controls button.active {
@@ -125,17 +158,17 @@ h1 {
     box-shadow: 0 2px 8px rgba(255, 99, 71, 0.3);
 }
 
-/* Styling untuk dropdown durasi */
 .duration-selector {
     margin-bottom: 20px;
-    color: #888;
+    color: var(--text-secondary-color);
 }
 
 .duration-selector select {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     padding: 5px 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--button-inactive-bg);
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
