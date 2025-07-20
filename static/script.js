@@ -1,13 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const durationSelect = document.getElementById('duration-select');
+    // === BAGIAN THEME TOGGLE (BARU) ===
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme');
 
+    // Cek tema yang tersimpan saat halaman dimuat
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️'; // Ganti ikon ke matahari
+    }
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        let theme = 'light';
+        if (document.body.classList.contains('dark-mode')) {
+            theme = 'dark';
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+        // Simpan pilihan tema ke localStorage
+        localStorage.setItem('theme', theme);
+        // Update warna chart setelah ganti tema
+        updateChart(document.querySelector('.chart-controls button.active').id.split('-')[1]);
+    });
+    // === AKHIR BAGIAN THEME TOGGLE ===
+
+
+    const durationSelect = document.getElementById('duration-select');
     let focusTime = parseInt(durationSelect.value) * 60;
     let timeLeft = focusTime;
     let timerInterval = null;
     let isPaused = true;
     let chartInstance = null;
-
-    // BARU: Variabel untuk menyimpan waktu selesai
     let endTime = 0;
 
     const timerDisplay = document.getElementById('timer-display');
@@ -34,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     async function saveSession() {
         try {
             await fetch('/save-session', { method: 'POST' });
-            console.log('Sesi berhasil disimpan.');
             const activePeriod = document.querySelector('.chart-controls button.active').id.split('-')[1];
             updateChart(activePeriod);
         } catch (error) {
@@ -44,22 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function toggleTimer() {
         durationSelect.disabled = true;
-
         if (isPaused) {
             isPaused = false;
-            // UPDATE: Catat waktu selesai berdasarkan sisa waktu yang ada
             endTime = Date.now() + timeLeft * 1000;
-            
             startPauseBtn.textContent = 'Jeda';
             statusText.textContent = 'Lagi fokus... jangan ganggu!';
-            
             timerInterval = setInterval(() => {
-                // UPDATE: Hitung sisa waktu berdasarkan selisih waktu, bukan dikurangi 1
                 const newTimeLeft = Math.round((endTime - Date.now()) / 1000);
                 timeLeft = newTimeLeft > 0 ? newTimeLeft : 0;
-                
                 updateTimerDisplay();
-
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     showNotification();
@@ -81,16 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = true;
         focusTime = parseInt(durationSelect.value) * 60;
         timeLeft = focusTime;
-        endTime = 0; // Reset waktu selesai
+        endTime = 0;
         updateTimerDisplay();
         startPauseBtn.textContent = 'Mulai';
         statusText.textContent = 'Waktunya untuk fokus!';
         durationSelect.disabled = false;
     }
 
-    durationSelect.addEventListener('change', () => {
-        resetTimer();
-    });
+    durationSelect.addEventListener('change', () => { resetTimer(); });
     
     async function updateChart(period = 'weekly') {
         try {
@@ -102,6 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 chartInstance.destroy();
             }
 
+            // BARU: Atur warna chart berdasarkan tema
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#e0e0e0' : '#333';
+
             chartInstance = new Chart(ctx, {
                 type: stats.chart_type,
                 data: {
@@ -109,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     datasets: [{
                         label: 'Sesi Fokus Selesai',
                         data: stats.data,
-                        backgroundColor: stats.chart_type === 'line' ? 'rgba(255, 99, 71, 0.2)' : 'rgba(255, 99, 71, 0.7)',
-                        borderColor: 'rgba(255, 99, 71, 1)',
+                        backgroundColor: stats.chart_type === 'line' ? 'rgba(255, 122, 92, 0.2)' : 'rgba(255, 122, 92, 0.7)',
+                        borderColor: 'rgba(255, 122, 92, 1)',
                         borderWidth: stats.chart_type === 'line' ? 2 : 1,
                         borderRadius: stats.chart_type === 'bar' ? 5 : 0,
                         fill: stats.chart_type === 'line' ? true : false,
@@ -118,7 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }]
                 },
                 options: {
-                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { precision: 0, color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                           ticks: { color: textColor },
+                           grid: { color: gridColor }
+                        }
+                    },
                     plugins: { legend: { display: false } }
                 }
             });
