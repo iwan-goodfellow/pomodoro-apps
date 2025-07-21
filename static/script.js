@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     
-    function showNotification() { if (Notification.permission === 'granted') { new Notification('Waktunya Istirahat!', { body: 'Kerja bagus! Ayo break dulu ☕️✨', icon: 'https://img.icons8.com/emoji/48/tomato-emoji.png' }); notificationSound.play(); } }
+    function showNotification() { if (Notification.permission === 'granted') { new Notification('Waktunya Istirahat!', { body: 'Kerja bagus! Ayo break dulu ☕️✨', icon: '	https://img.icons8.com/emoji/48/alarm-clock-emoji.png' }); notificationSound.play(); } }
 
     async function saveSession() {
         try {
